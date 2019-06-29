@@ -8,11 +8,22 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 import android.hardware.ConsumerIrManager
+import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import java.util.logging.Logger
+import android.os.VibrationEffect
+import android.os.Build
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Vibrator
+
+
 
 class MainActivity : AppCompatActivity() {
 
+    private var plusIRMsg = intArrayOf(907, 814, 4376, 813, 904)
+    private var minusIRMsg = intArrayOf(1771, 821, 3499, 823, 869)
+    private var freq: Int = 0
+    private var freqList = listOf<Int>()
     private lateinit var manager: ConsumerIrManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,32 +32,47 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val coordinatorLayout = findViewById(R.id.coordinatorLayout) as CoordinatorLayout
+        initIR()
 
+        plus.setOnClickListener {
+            this.manager.transmit(this.freq, this.plusIRMsg)
+            this.vibrate()
+        }
+        minus.setOnClickListener {
+            this.manager.transmit(this.freq, this.minusIRMsg)
+            this.vibrate()
+        }
+    }
+
+    private fun initIR() {
         this.manager = getSystemService(CONSUMER_IR_SERVICE) as ConsumerIrManager
         if (this.manager.hasIrEmitter()) {
             val ranges = this.manager.carrierFrequencies
-
-            Snackbar.make(coordinatorLayout, "IR DEVICE FOUND", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            this.freq = ranges.first().minFrequency
             ranges.forEach {
-                Logger.getLogger(MainActivity::class.java.name).warning(it.minFrequency.toString() +" = "+it.maxFrequency.toString())
+//                this.freqList.
             }
         } else {
-            Snackbar.make(coordinatorLayout, "IR DEVICE NOT FOUND", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "IR DEVICE NOT FOUND", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show()
         }
+    }
 
-
-        plus.setOnClickListener { view ->
-            Snackbar.make(view, "Plus clicked", Snackbar.LENGTH_LONG).setAction("Action", null).show()
-        }
-        minus.setOnClickListener { view ->
-            Snackbar.make(view, "Minus clicked", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+    private fun vibrate() {
+        val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            v.vibrate(100)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+
         return true
     }
 
