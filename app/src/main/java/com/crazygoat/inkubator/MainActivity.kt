@@ -13,6 +13,11 @@ import android.os.VibrationEffect
 import android.os.Build
 import android.os.Vibrator
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+
+
 class MainActivity : AppCompatActivity() {
 
     private var plusIRMsg = intArrayOf(907, 814, 4376, 813, 904)
@@ -20,12 +25,18 @@ class MainActivity : AppCompatActivity() {
     private var selectedFreq = 0
     private var freqList = mutableListOf<Int>()
     private lateinit var manager: ConsumerIrManager
+    lateinit var mAdView : AdView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
 
         initIR()
 
