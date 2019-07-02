@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
         mAdView = findViewById(R.id.adView)
-        val adRequest = AdRequest.Builder().build()
+        val adRequest = AdRequest.Builder().addTestDevice("DDA00DD0D73B3836A10FAEB8CA7CA1C0").build()
         mAdView.loadAd(adRequest)
 
         initIR()

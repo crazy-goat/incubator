@@ -11,14 +11,13 @@
     <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
+            ads:adSize="LARGE_BANNER"
             ads:adUnitId="ca-app-pub-8946788367028477/7848699777"
-            ads:layout_constraintStart_toStartOf="parent" ads:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" ads:layout_constraintTop_toTopOf="parent">
+            tools:layout_editor_absoluteY="8dp">
     </com.google.android.gms.ads.AdView>
 
     <TextView
