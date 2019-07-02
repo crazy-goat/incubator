@@ -71,23 +71,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val freqMenu = menu.findItem(R.id.freq_menu)
-        freqMenu.subMenu.clear()
-        var nb = 0
-        this.manager.carrierFrequencies.forEach {
-            var item = freqMenu.subMenu.add(0, 100000 + nb, 0, it.maxFrequency.toString() + " Hz")
-            item.setCheckable(true)
-            item.setChecked(nb == selectedFreq)
+        if (freqList.size > 0) {
+            freqMenu.setVisible(true)
+            freqMenu.subMenu.clear()
+            var nb = 0
+            freqList.forEach {
+                val item = freqMenu.subMenu.add(0, 100000 + nb, 0, it.toString() + " Hz")
+                item.setCheckable(true)
+                item.setChecked(nb == selectedFreq)
 
-            nb++
+                nb++
+            }
+        } else {
+            freqMenu.setVisible(false)
         }
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
         if (item.itemId >= 100000 && item.itemId < 100000 + freqList.size) {
             this.setFrequency(item.itemId - 100000)
         }
