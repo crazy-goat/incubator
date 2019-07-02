@@ -2,9 +2,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.crazygoat.inkubator.MainActivity">
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/freq_menu"
           android:title="@string/action_settings"
           android:orderInCategory="100"
-          app:showAsAction="never"/>
+          app:showAsAction="never">
+        <menu>
+
+        </menu>
+    </item>
     <item android:title="@string/menu_home_pag" android:orderInCategory="101" android:id="@+id/action_homepage"/>
 </menu>

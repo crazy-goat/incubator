@@ -9,21 +9,16 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import android.hardware.ConsumerIrManager
 import android.view.View
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import java.util.logging.Logger
 import android.os.VibrationEffect
 import android.os.Build
-import android.content.Context.VIBRATOR_SERVICE
 import android.os.Vibrator
-
-
 
 class MainActivity : AppCompatActivity() {
 
     private var plusIRMsg = intArrayOf(907, 814, 4376, 813, 904)
     private var minusIRMsg = intArrayOf(1771, 821, 3499, 823, 869)
-    private var freq: Int = 0
-    private var freqList = listOf<Int>()
+    private var selectedFreq = 0
+    private var freqList = mutableListOf<Int>()
     private lateinit var manager: ConsumerIrManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +30,11 @@ class MainActivity : AppCompatActivity() {
         initIR()
 
         plus.setOnClickListener {
-            this.manager.transmit(this.freq, this.plusIRMsg)
+            this.manager.transmit(freqList[selectedFreq], this.plusIRMsg)
             this.vibrate()
         }
         minus.setOnClickListener {
-            this.manager.transmit(this.freq, this.minusIRMsg)
+            this.manager.transmit(freqList[selectedFreq], this.minusIRMsg)
             this.vibrate()
         }
     }
@@ -48,10 +43,10 @@ class MainActivity : AppCompatActivity() {
         this.manager = getSystemService(CONSUMER_IR_SERVICE) as ConsumerIrManager
         if (this.manager.hasIrEmitter()) {
             val ranges = this.manager.carrierFrequencies
-            this.freq = ranges.first().minFrequency
             ranges.forEach {
-//                this.freqList.
+                freqList.add(it.minFrequency)
             }
+            this.setFrequency(0)
         } else {
             Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "IR DEVICE NOT FOUND", Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
@@ -62,27 +57,53 @@ class MainActivity : AppCompatActivity() {
     private fun vibrate() {
         val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+            v.vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             //deprecated in API 26
-            v.vibrate(100)
+            v.vibrate(150)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
-
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val freqMenu = menu.findItem(R.id.freq_menu)
+        freqMenu.subMenu.clear()
+        var nb = 0
+        this.manager.carrierFrequencies.forEach {
+            var item = freqMenu.subMenu.add(0, 100000 + nb, 0, it.maxFrequency.toString() + " Hz")
+            item.setCheckable(true)
+            item.setChecked(nb == selectedFreq)
+
+            nb++
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+
+        if (item.itemId >= 100000 && item.itemId < 100000 + freqList.size) {
+            this.setFrequency(item.itemId - 100000)
         }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun setFrequency(index: Int) {
+        val item = freqList.getOrNull(index)
+        if (item === null) {
+            Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "FREQ NOT FOUND", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show()
+            return
+        }
+
+        this.selectedFreq = index
     }
 }
