@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Inkubator IO-1P TE</string>
+    <string name="app_name">Incubator IO-1P TE</string>
     <string name="action_settings">IR frequency</string>
     <string name="menu_home_pag">Homepage</string>
+    <string name="settigns_freq_key">settings_freq</string>
+    <string name="menu_help">Help</string>
 </resources>

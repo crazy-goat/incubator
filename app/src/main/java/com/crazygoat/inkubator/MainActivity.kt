@@ -1,5 +1,6 @@
 package com.crazygoat.inkubator
 
+import android.content.Context
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -33,13 +34,13 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
-        mAdView = findViewById(R.id.adView)
-        val adRequest = AdRequest.Builder().addTestDevice("DDA00DD0D73B3836A10FAEB8CA7CA1C0").build()
-        mAdView.loadAd(adRequest)
-
+        initAds()
         initIR()
+        registerButtons()
+    }
 
+    private fun registerButtons()
+    {
         plus.setOnClickListener {
             this.manager.transmit(freqList[selectedFreq], this.plusIRMsg)
             this.vibrate()
@@ -50,6 +51,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initAds()
+    {
+        MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().addTestDevice("DDA00DD0D73B3836A10FAEB8CA7CA1C0").build()
+        mAdView.loadAd(adRequest)
+    }
+
     private fun initIR() {
         this.manager = getSystemService(CONSUMER_IR_SERVICE) as ConsumerIrManager
         if (this.manager.hasIrEmitter()) {
@@ -57,7 +66,8 @@ class MainActivity : AppCompatActivity() {
             ranges.forEach {
                 freqList.add(it.minFrequency)
             }
-            this.setFrequency(0)
+
+            this.setFrequency(getPreferences(Context.MODE_PRIVATE).getInt(getString(R.string.settigns_freq_key), 0))
         } else {
             Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "IR DEVICE NOT FOUND", Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
@@ -101,7 +111,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId >= 100000 && item.itemId < 100000 + freqList.size) {
-            this.setFrequency(item.itemId - 100000)
+            val freq_id = item.itemId - 100000
+            this.setFrequency(freq_id)
         }
 
         return super.onOptionsItemSelected(item)
@@ -115,6 +126,13 @@ class MainActivity : AppCompatActivity() {
                 .show()
             return
         }
+
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        with (sharedPref.edit()) {
+            putInt(getString(R.string.settigns_freq_key), index)
+            apply()
+        }
+
 
         this.selectedFreq = index
     }

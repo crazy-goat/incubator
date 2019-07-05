@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Inkubator IO-1P TE</string>
+    <string name="action_settings">Częstotliwość IrDA</string>
+    <string name="menu_home_pag">Strona domowa</string>
+    <string name="menu_help">Pomoc</string>
+</resources>
