@@ -5,4 +5,7 @@
     <string name="settigns_freq_key">settings_freq</string>
     <string name="menu_help">Help</string>
     <string name="home_page">https://incubator.crazy-goat.com</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_help_title">Help dialog</string>
+    <string name="dialog_help_message">Help message</string>
 </resources>

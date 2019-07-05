@@ -1,5 +1,6 @@
 package com.crazygoat.inkubator
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -125,6 +126,16 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                     return true
+                }
+                R.id.action_help -> {
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    builder.setTitle(getString(R.string.dialog_help_title))
+                    builder.setMessage(getString(R.string.dialog_help_message))
+                    builder.setPositiveButton(getString(R.string.dialog_close)){_, _ ->
+
+                    }
+                    val dialog: AlertDialog = builder.create()
+                    dialog.show()
                 }
             }
         }
