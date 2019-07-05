@@ -17,6 +17,8 @@ import android.os.Vibrator
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
+import android.content.Intent
+import android.net.Uri
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedFreq = 0
     private var freqList = mutableListOf<Int>()
     private lateinit var manager: ConsumerIrManager
-    lateinit var mAdView : AdView
+    lateinit var mAdView: AdView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +41,7 @@ class MainActivity : AppCompatActivity() {
         registerButtons()
     }
 
-    private fun registerButtons()
-    {
+    private fun registerButtons() {
         plus.setOnClickListener {
             this.manager.transmit(freqList[selectedFreq], this.plusIRMsg)
             this.vibrate()
@@ -51,8 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initAds()
-    {
+    private fun initAds() {
         MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
         mAdView = findViewById(R.id.adView)
         val adRequest = AdRequest.Builder().addTestDevice("DDA00DD0D73B3836A10FAEB8CA7CA1C0").build()
@@ -113,6 +113,20 @@ class MainActivity : AppCompatActivity() {
         if (item.itemId >= 100000 && item.itemId < 100000 + freqList.size) {
             val freq_id = item.itemId - 100000
             this.setFrequency(freq_id)
+            return true
+        } else {
+            when (item.itemId) {
+                R.id.action_homepage -> {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW, Uri.parse(
+                                getString(R.string.home_page)
+                            )
+                        )
+                    )
+                    return true
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -128,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val sharedPref = getPreferences(Context.MODE_PRIVATE)
-        with (sharedPref.edit()) {
+        with(sharedPref.edit()) {
             putInt(getString(R.string.settigns_freq_key), index)
             apply()
         }

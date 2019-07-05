@@ -10,6 +10,6 @@
 
         </menu>
     </item>
-    <item android:title="@string/menu_help" android:orderInCategory="101" android:id="@+id/help_menu"/>
+    <item android:title="@string/menu_help" android:orderInCategory="101" android:id="@+id/action_help"/>
     <item android:title="@string/menu_home_pag" android:orderInCategory="102" android:id="@+id/action_homepage"/>
 </menu>
