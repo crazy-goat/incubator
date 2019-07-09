@@ -2,9 +2,9 @@
     <string name="app_name">Incubator IO-1P TE</string>
     <string name="action_settings">IR frequency</string>
     <string name="menu_home_pag">Homepage</string>
-    <string name="settigns_freq_key">settings_freq</string>
+    <string name="settigns_freq_key" translatable="false">settings_freq</string>
     <string name="menu_help">Help</string>
-    <string name="home_page">https://incubator.crazy-goat.com</string>
+    <string name="home_page" translatable="false">https://incubator.crazy-goat.com</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_help_title">Help dialog</string>
     <string name="dialog_help_message">1. Point the smartphone IR transmitter towards the incubator.\n
