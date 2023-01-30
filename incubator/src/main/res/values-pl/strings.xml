@@ -8,4 +8,5 @@
     <string name="dialog_help_title">Instrukcja obsługi</string>
     <string name="dialog_help_message">1. Skieruj telefon nadajnikiem IR w kierunku inkubatora.\n2. Kliknij przycisk "-" lub "+" aby włączyć tryb zmiany temperatury (wyświetlacz inkubatora powinien migać).\n3. Za pomocą przycisków -/+ ustaw żądaną temperature.\n4. Odczekaj chwilę aż wyświetlać przestanie migać.\n\nW przypadky gdy inkubatora nie reaguje na przyciski -/+, zmień częstotliwość w menu -> Częstotliwość IrDA.</string>
     <string name="no_ir_text">Twój smartfon nie posiada modułu podczerwieni</string>
+    <string name="freq_not_found">Nie znaleziono częstotliwości</string>
 </resources>
