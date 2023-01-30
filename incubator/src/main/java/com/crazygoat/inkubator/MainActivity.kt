@@ -2,24 +2,22 @@ package com.crazygoat.inkubator
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import android.hardware.ConsumerIrManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
-
-import kotlinx.android.synthetic.main.activity_main.*
-import android.hardware.ConsumerIrManager
 import android.view.View
-import android.os.VibrationEffect
-import android.os.Build
-import android.os.Vibrator
-
-import com.google.android.gms.ads.MobileAds;
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import android.content.Intent
-import android.net.Uri
+import com.google.android.gms.ads.MobileAds
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedFreq = 0
     private var freqList = mutableListOf<Int>()
     private lateinit var manager: ConsumerIrManager
-    lateinit var mAdView: AdView
+    private lateinit var mAdView: AdView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,23 +41,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun registerButtons() {
-        plus.setOnClickListener {
-            this.manager.transmit(freqList[selectedFreq], this.plusIRMsg)
+        plus.setOnClickListener { this.transmit(this.plusIRMsg); }
+        minus.setOnClickListener { this.transmit(this.minusIRMsg); }
+    }
+
+    private fun transmit(data: IntArray) {
+        if (this.manager.hasIrEmitter()) {
+            this.manager.transmit(freqList[selectedFreq], data)
             this.vibrate()
-        }
-        minus.setOnClickListener {
-            this.manager.transmit(freqList[selectedFreq], this.minusIRMsg)
-            this.vibrate()
+        } else {
+            displayNoIRWarning()
         }
     }
 
     private fun initAds() {
-        MobileAds.initialize(this, "ca-app-pub-8946788367028477~2624293256")
+        MobileAds.initialize(this)
         mAdView = findViewById(R.id.adView)
         val adRequest = AdRequest.Builder()
-            //.addTestDevice("DDA00DD0D73B3836A10FAEB8CA7CA1C0")
-            .build()
-        mAdView.loadAd(adRequest)
+
+        mAdView.loadAd(adRequest.build())
+    }
+
+    private fun displayNoIRWarning() {
+        Snackbar.make(
+            findViewById(R.id.coordinatorLayout),
+            getString(R.string.no_ir_text),
+            Snackbar.LENGTH_LONG
+        )
+            .setAction("Action", null)
+            .show()
     }
 
     private fun initIR() {
@@ -70,11 +80,14 @@ class MainActivity : AppCompatActivity() {
                 freqList.add(it.minFrequency)
             }
 
-            this.setFrequency(getPreferences(Context.MODE_PRIVATE).getInt(getString(R.string.settigns_freq_key), 0))
+            this.setFrequency(
+                getPreferences(Context.MODE_PRIVATE).getInt(
+                    getString(R.string.settigns_freq_key),
+                    0
+                )
+            )
         } else {
-            Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "IR DEVICE NOT FOUND", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .show()
+            this.displayNoIRWarning()
         }
     }
 
@@ -96,26 +109,26 @@ class MainActivity : AppCompatActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val freqMenu = menu.findItem(R.id.freq_menu)
         if (freqList.size > 0) {
-            freqMenu.setVisible(true)
-            freqMenu.subMenu.clear()
+            freqMenu.isVisible = true
+            freqMenu.subMenu?.clear()
             var nb = 0
             freqList.forEach {
-                val item = freqMenu.subMenu.add(0, 100000 + nb, 0, it.toString() + " Hz")
-                item.setCheckable(true)
-                item.setChecked(nb == selectedFreq)
+                val item = freqMenu.subMenu?.add(0, 100000 + nb, 0, it.toString() + " Hz")
+                item?.isCheckable = true
+                item?.isChecked = nb == selectedFreq
 
                 nb++
             }
         } else {
-            freqMenu.setVisible(false)
+            freqMenu.isVisible = false
         }
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId >= 100000 && item.itemId < 100000 + freqList.size) {
-            val freq_id = item.itemId - 100000
-            this.setFrequency(freq_id)
+            val freqId = item.itemId - 100000
+            this.setFrequency(freqId)
             return true
         } else {
             when (item.itemId) {
@@ -133,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                     val builder = AlertDialog.Builder(this@MainActivity)
                     builder.setTitle(getString(R.string.dialog_help_title))
                     builder.setMessage(getString(R.string.dialog_help_message))
-                    builder.setPositiveButton(getString(R.string.dialog_close)){_, _ ->
+                    builder.setPositiveButton(getString(R.string.dialog_close)) { _, _ ->
 
                     }
                     val dialog: AlertDialog = builder.create()
@@ -148,7 +161,11 @@ class MainActivity : AppCompatActivity() {
     private fun setFrequency(index: Int) {
         val item = freqList.getOrNull(index)
         if (item === null) {
-            Snackbar.make(findViewById<View>(R.id.coordinatorLayout), "FREQ NOT FOUND", Snackbar.LENGTH_LONG)
+            Snackbar.make(
+                findViewById<View>(R.id.coordinatorLayout),
+                "FREQ NOT FOUND",
+                Snackbar.LENGTH_LONG
+            )
                 .setAction("Action", null)
                 .show()
             return

@@ -8,4 +8,5 @@
     <string name="dialog_close">Close</string>
     <string name="dialog_help_title">Help dialog</string>
     <string name="dialog_help_message">1. Point the smartphone IR transmitter towards the incubator.\n2. Click the "-" or "+" button to enter the temperature change mode (the incubator display should blink).\n3. Use the -/+ buttons to set the desired temperature.\n4. Wait a moment until the display stops flashing.\n\nIn cases when the incubator does not respond to the buttons -/+, change the frequency in the menu -> IrDA frequency.</string>
+    <string name="no_ir_text">Your smartphone does not have an infrared module</string>
 </resources>
