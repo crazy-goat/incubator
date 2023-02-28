@@ -10,11 +10,11 @@ import android.os.*
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.crazygoat.inkubator.databinding.ActivityMainBinding
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,14 +25,17 @@ class MainActivity : AppCompatActivity() {
     private var prefs: SharedPreferences? = null
     private lateinit var manager: ConsumerIrManager
     private lateinit var mAdView: AdView
-
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = getSharedPreferences(packageName, MODE_PRIVATE)
 
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        setSupportActionBar(binding.toolbar)
         initAds()
         initIR()
         registerButtons()
@@ -50,8 +53,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun registerButtons() {
-        plus.setOnClickListener { this.transmit(this.plusIRMsg); }
-        minus.setOnClickListener { this.transmit(this.minusIRMsg); }
+        binding.plus.setOnClickListener { this.transmit(this.plusIRMsg); }
+        binding.minus.setOnClickListener { this.transmit(this.minusIRMsg); }
     }
 
     private fun transmit(data: IntArray) {
